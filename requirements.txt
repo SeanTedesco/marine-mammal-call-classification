@@ -3,3 +3,7 @@ requests
 pandas
 pymongo
 bs4
+numpy
+matplotlib
+seaborn
+tensorflow-macos
