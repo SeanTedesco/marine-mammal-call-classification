@@ -4,12 +4,11 @@ import librosa
 import math
 import json
 
-# path to the dataset. 
-# directory holding the directories of the classes
+# the directory before all of the directories of the wav files. 
+DATASET_PATH = "/Users/seantedesco/Documents/marine-mammal-call-classification/augmented_data"
 
-DATASET_PATH = "/Users/seantedesco/Documents/classifying_marine_mammals_vocals_with_CNN_and_Dolby/training_data" # the directory before all of the directories of wav files. 
-JSON_PATH = "MFCCs_data.json" # the output json file rename here. 
-
+# provide the name of the output json file
+JSON_PATH = "mfccs_cnn_data.json"
 
 SAMPLE_RATE = 22050
 DURATION = 30 # measured in seconds
