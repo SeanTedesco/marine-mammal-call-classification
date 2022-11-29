@@ -6,4 +6,5 @@ bs4
 numpy
 matplotlib
 seaborn
+pydub
 tensorflow-macos
