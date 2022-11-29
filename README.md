@@ -19,8 +19,8 @@ pip3 install -r requirements
 ```
 
 ## Species To Be Classified
-1. Bowhead Whale
+1. BowheadWhale
 2. Walrus
-3. Killer Whale
-4. Humpback Whale
-5. Finback Whale 
+3. KillerWhale
+4. HumpbackWhale
+5. Fin_FinbackWhale
