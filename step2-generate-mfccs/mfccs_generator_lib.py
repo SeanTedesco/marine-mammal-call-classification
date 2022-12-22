@@ -4,11 +4,6 @@ import librosa
 import math
 import json
 
-# the directory before all of the directories of the wav files. 
-DATASET_PATH = "/Users/seantedesco/Documents/marine-mammal-call-classification/augmented_data"
-
-# provide the name of the output json file
-JSON_PATH = "mfccs_cnn_data.json"
 
 SAMPLE_RATE = 22050
 DURATION = 30 # measured in seconds
@@ -69,6 +64,3 @@ def save_mfcc(dataset_path, json_path, n_mfcc=13, n_fft=2048, hop_length=512, nu
                 
     with open(json_path, "w") as fp:
         json.dump(data, fp, indent=4)
-        
-if __name__ == "__main__":
-    save_mfcc(DATASET_PATH, JSON_PATH, num_segments=10)
