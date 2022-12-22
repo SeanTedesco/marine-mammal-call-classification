@@ -1,4 +1,10 @@
-data_*/
+# python files
+.ipynb_checkpoints
 *env/
+
+# macOS specific files
 .DS_Store
+
+# application files
 *.json
+data_*/
