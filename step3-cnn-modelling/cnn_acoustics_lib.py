@@ -46,7 +46,7 @@ def prepare_datasets(X, y, test_size, validation_size):
     return X_train, X_validation, X_test, y_train, y_validation, y_test
 
 
-def plot_history(history):
+def plot_history(history, image_name:str):
     """Plots accuracy/loss for training/validation set as a function of the epochs
         :param history: Training history of model
         :return:
@@ -71,7 +71,7 @@ def plot_history(history):
     
     # Save image
     fig.subplots_adjust(hspace=0.5)
-    plt.savefig('/Users/seantedesco/Documents/marine-mammal-call-classification/acc_loss_metrics.png', bbox_inches='tight')
+    plt.savefig(image_name, bbox_inches='tight')
     plt.show()
 
 
@@ -103,8 +103,6 @@ def build_model(input_shape):
             
     # output layer that uses softmax
     model.add(keras.layers.Dense(9, activation='softmax')) # number of neurons of the classifications we want to predict
-    
-    print(model.summary())
     
     return model
 
