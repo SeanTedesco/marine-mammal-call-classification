@@ -15,7 +15,7 @@ python3 -V
 python3 -m venv mammal-env
 . mammal-env/bin/activate
 python3 -m pip install --upgrade pip
-pip3 install -r requirements
+pip3 install -r requirements.txt
 ```
 
 ## Species To Be Classified
