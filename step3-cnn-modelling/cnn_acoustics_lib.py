@@ -56,14 +56,14 @@ def plot_history(history, image_name:str):
 
     # create accuracy sublpot
     axs[0].plot(history.history["accuracy"], label="train accuracy")
-    axs[0].plot(history.history["val_accuracy"], label="test accuracy")
+    axs[0].plot(history.history["val_accuracy"], label="validation accuracy")
     axs[0].set_ylabel("Accuracy")
     axs[0].legend(loc="lower right")
     axs[0].set_title("Accuracy eval")
 
     # create error sublpot
     axs[1].plot(history.history["loss"], label="train error")
-    axs[1].plot(history.history["val_loss"], label="test error")
+    axs[1].plot(history.history["val_loss"], label="validation error")
     axs[1].set_ylabel("Error")
     axs[1].set_xlabel("Epoch")
     axs[1].legend(loc="upper right")
@@ -76,26 +76,24 @@ def plot_history(history, image_name:str):
 
 
 def build_model(input_shape):
-    
     # Instantiate model
     model = keras.Sequential()
-    
+
     # 1st conv layer
     model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
     model.add(keras.layers.MaxPool2D((3, 3), strides=(2,2), padding='same'))
     model.add(keras.layers.BatchNormalization()) # normalizes the activation at the layer, speeds up training
-              
+
     # 2nd conv layer
     model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
     model.add(keras.layers.MaxPool2D((3, 3), strides=(2,2), padding='same'))
     model.add(keras.layers.BatchNormalization())
-                  
-              
+
     # 3rd conv layer
     model.add(keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=input_shape))
     model.add(keras.layers.MaxPool2D((2, 2), strides=(2,2), padding='same'))
     model.add(keras.layers.BatchNormalization())
-              
+
     # flatten output and feed it into dense layer
     model.add(keras.layers.Flatten()) # flatten conv output
     model.add(keras.layers.Dense(64, activation='relu'))
@@ -103,7 +101,7 @@ def build_model(input_shape):
             
     # output layer that uses softmax
     model.add(keras.layers.Dense(9, activation='softmax')) # number of neurons of the classifications we want to predict
-    
+
     return model
 
 
