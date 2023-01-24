@@ -56,14 +56,14 @@ def plot_history(history, image_name:str):
 
     # create accuracy sublpot
     axs[0].plot(history.history["accuracy"], label="train accuracy")
-    axs[0].plot(history.history["val_accuracy"], label="validation accuracy")
+    axs[0].plot(history.history["val_accuracy"], label="test accuracy")
     axs[0].set_ylabel("Accuracy")
     axs[0].legend(loc="lower right")
     axs[0].set_title("Accuracy eval")
 
     # create error sublpot
     axs[1].plot(history.history["loss"], label="train error")
-    axs[1].plot(history.history["val_loss"], label="validation error")
+    axs[1].plot(history.history["val_loss"], label="test error")
     axs[1].set_ylabel("Error")
     axs[1].set_xlabel("Epoch")
     axs[1].legend(loc="upper right")
@@ -73,37 +73,6 @@ def plot_history(history, image_name:str):
     fig.subplots_adjust(hspace=0.5)
     plt.savefig(image_name, bbox_inches='tight')
     plt.show()
-
-
-def build_model(input_shape):
-    # Instantiate model
-    model = keras.Sequential()
-
-    # 1st conv layer
-    model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
-    model.add(keras.layers.MaxPool2D((3, 3), strides=(2,2), padding='same'))
-    model.add(keras.layers.BatchNormalization()) # normalizes the activation at the layer, speeds up training
-
-    # 2nd conv layer
-    model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
-    model.add(keras.layers.MaxPool2D((3, 3), strides=(2,2), padding='same'))
-    model.add(keras.layers.BatchNormalization())
-
-    # 3rd conv layer
-    model.add(keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=input_shape))
-    model.add(keras.layers.MaxPool2D((2, 2), strides=(2,2), padding='same'))
-    model.add(keras.layers.BatchNormalization())
-
-    # flatten output and feed it into dense layer
-    model.add(keras.layers.Flatten()) # flatten conv output
-    model.add(keras.layers.Dense(64, activation='relu'))
-    model.add(keras.layers.Dropout(0.3)) # randomly drops neurons
-            
-    # output layer that uses softmax
-    model.add(keras.layers.Dense(9, activation='softmax')) # number of neurons of the classifications we want to predict
-
-    return model
-
 
 def predict(model, X, y):
     X = X[np.newaxis, ...] # to put make a 4D
@@ -115,3 +84,44 @@ def predict(model, X, y):
     predicted_index = np.argmax(prediction, axis=1) # [idx] 
     print("Expected index: {}, Predicted index: {}".format(y, predicted_index))
 #     print(X.shape)
+
+def count_trainable_parameters(mdl):
+    from keras.utils.layer_utils import count_params
+    trainable_count = count_params(mdl.trainable_weights)
+    non_trainable_count = count_params(mdl.non_trainable_weights)
+    return trainable_count
+
+
+def add_conv_layer(mdl, input_shape, output_shape):
+    mdl.add(keras.layers.Conv2D(output_shape, (3, 3), activation='relu', input_shape=input_shape))
+    mdl.add(keras.layers.MaxPool2D((3, 3), strides=(1,1), padding='same'))
+    mdl.add(keras.layers.BatchNormalization()) # normalizes the activation at the layer, speeds up training
+
+
+def add_dense_flat_layer(mdl):
+    # flatten output and feed it into dense layer
+    mdl.add(keras.layers.Flatten()) # flatten conv output
+    mdl.add(keras.layers.Dense(64, activation='relu'))
+    mdl.add(keras.layers.Dropout(0.3)) # randomly drops neurons
+
+
+def add_softmax_layer(mdl):
+    # output layer that uses softmax
+    mdl.add(keras.layers.Dense(9, activation='softmax')) # number of neurons of the classifications we want to predict
+
+
+def create_layered_cnn(n_layers, input_shape, output_shape):
+    model = keras.Sequential()
+    for n in range(n_layers):
+        add_conv_layer(model, input_shape, output_shape)
+    add_dense_flat_layer(model)
+    add_softmax_layer(model)
+
+    optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+    model.compile(optimizer=optimizer, 
+              loss="sparse_categorical_crossentropy",
+              metrics=['accuracy'])
+
+    model.build(input_shape)
+
+    return model
