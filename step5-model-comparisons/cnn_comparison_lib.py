@@ -93,7 +93,7 @@ def count_trainable_parameters(mdl):
 
 
 def add_conv_layer(mdl, input_shape, output_shape):
-    mdl.add(keras.layers.Conv2D(output_shape, (3, 3), activation='relu', input_shape=input_shape))
+    mdl.add(keras.layers.Conv2D(output_shape, (3, 3), activation='relu', padding='same', input_shape=input_shape))
     mdl.add(keras.layers.MaxPool2D((3, 3), strides=(1,1), padding='same'))
     mdl.add(keras.layers.BatchNormalization()) # normalizes the activation at the layer, speeds up training
 
@@ -107,12 +107,11 @@ def add_dense_flat_layer(mdl):
 
 def add_softmax_layer(mdl):
     # output layer that uses softmax
-    mdl.add(keras.layers.Dense(9, activation='softmax')) # number of neurons of the classifications we want to predict
+    mdl.add(keras.layers.Dense(7, activation='softmax')) # number of neurons of the classifications we want to predict
 
 
 def create_layered_cnn(n_layers, input_shape, output_shape, model_params):
     model = keras.Sequential()
-    padding = model_params.get('padding')
     for _ in range(n_layers):
         add_conv_layer(model, input_shape, output_shape)
     add_dense_flat_layer(model)
