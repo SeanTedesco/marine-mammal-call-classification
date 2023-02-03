@@ -8,3 +8,5 @@ matplotlib
 seaborn
 pydub
 tensorflow-macos
+tensorflow-model-optimization
+gradio
