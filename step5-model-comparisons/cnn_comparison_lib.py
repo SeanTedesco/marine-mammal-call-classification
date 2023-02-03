@@ -102,7 +102,7 @@ def add_dense_flat_layer(mdl):
     # flatten output and feed it into dense layer
     mdl.add(keras.layers.Flatten()) # flatten conv output
     mdl.add(keras.layers.Dense(64, activation='relu'))
-    mdl.add(keras.layers.Dropout(0.3)) # randomly drops neurons
+    mdl.add(keras.layers.Dropout(0.1)) # randomly drops neurons
 
 
 def add_softmax_layer(mdl):
@@ -110,9 +110,10 @@ def add_softmax_layer(mdl):
     mdl.add(keras.layers.Dense(9, activation='softmax')) # number of neurons of the classifications we want to predict
 
 
-def create_layered_cnn(n_layers, input_shape, output_shape):
+def create_layered_cnn(n_layers, input_shape, output_shape, model_params):
     model = keras.Sequential()
-    for n in range(n_layers):
+    padding = model_params.get('padding')
+    for _ in range(n_layers):
         add_conv_layer(model, input_shape, output_shape)
     add_dense_flat_layer(model)
     add_softmax_layer(model)
