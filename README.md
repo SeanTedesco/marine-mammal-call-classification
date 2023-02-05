@@ -24,3 +24,4 @@ pip3 install -r requirements.txt
 3. KillerWhale
 4. HumpbackWhale
 5. Fin_FinbackWhale
+6. Empty Ocean
