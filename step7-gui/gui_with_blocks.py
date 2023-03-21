@@ -6,8 +6,8 @@ import json
 import tensorflow as tf
 import numpy as np
 from compression_lib import load_cnn_json
+import random
 
-mammal_call_path    = '../data_augmented/KillerWhale/KillerWhale_aug_0.wav'
 export_path         = 'mfccs_gui_test.json'
 saved_model_path    = '../saved_model/layers3/'
 
@@ -18,7 +18,7 @@ def select_image_for_classification(mammal_label:int):
         3: '../images/gui-images/killer-whale.jpg',
         4: '../images/gui-images/walrus.jpg',
         5: '../images/gui-images/fin-back-whale.jpg',
-        6: '../images/over-under-fitting-layers-3-5-7.png'
+        6: '../images/gui-images/empty_ocean.avif'
     }
     return image_map[mammal_label]
 
@@ -113,6 +113,27 @@ def classify(raw_audio, audio_file, desired_size):
 
     return mammal_image, prediction_string
 
+
+def get_name(input):
+    # Convert to the species for filename.
+    if input == "Killer Whale":
+        input = "KillerWhale"
+    if input == "Bowhead Whale":
+        input = "BowheadWhale"
+    if input == "Humpback Whale":
+        input = "HumpbackWhale"
+    if input == "Finback Whale":
+        input = "Fin_FinbackWhale"
+    if input == "Ambient Ocean Noise":
+        input = "EmptyOcean"
+    
+    # Randomly generate number
+    file_number = random.randint(0, 99)
+
+    audio_file_path = "../data_augmented/" + input + "/" + input + "_aug_" + str(file_number) + ".wav"
+    return audio_file_path, audio_file_path
+
+
 with gr.Blocks(theme = gr.themes.Soft()) as demo:
     gr.Markdown("# Marine Mammal Classification")
 
@@ -121,24 +142,10 @@ with gr.Blocks(theme = gr.themes.Soft()) as demo:
         species_name = gr.Dropdown(
             ["Walrus", "Killer Whale", "Finback Whale", "Bowhead Whale", "Humpback Whale", "Ambient Ocean Noise"], label="Species", info="Please select a species to classify:"
         )
-        
-        # Convert to the species for filename.
-        if species_name == "Killer Whale":
-            species_name = "KillerWhale"
-        if species_name == "Bowhead Whale":
-            species_name = "BowheadWhale"
-        if species_name == "Humpback Whale":
-            species_name = "HumpbackWhale"
-        if species_name == "Finback Whale":
-            species_name = "Fin_FinbackWhale"
-        if species_name == "Ambient Ocean Noise":
-            species_name = "EmptyOcean"
 
-        file_number = gr.Textbox(info="Please enter a number between 0 and 99:")
-        # TODO for syd
-        # generated_path = "../data_augmented/" + species_name + "/" + species_name + "_aug_" + file_number + ".wav"
-        file_path_input = gr.Textbox(mammal_call_path)
-        audio = gr.Audio(mammal_call_path)
+        file_path_input = gr.Textbox(label="Audio file path")
+        audio = gr.Audio()
+        species_name.change(fn = get_name, inputs = species_name, outputs = [file_path_input, audio])
 
     with gr.Box():
         gr.Markdown('## Model Constraints')
