@@ -7,18 +7,18 @@ import tensorflow as tf
 import numpy as np
 from compression_lib import load_cnn_json
 
-mammal_call_path    = '/Users/seantedesco/Documents/marine-mammal-call-classification/data_augmented/KillerWhale/KillerWhale_aug_0.wav'
-export_path         = '/Users/seantedesco/Documents/marine-mammal-call-classification/mfccs_gui_test.json'
-saved_model_path    = '/Users/seantedesco/Documents/marine-mammal-call-classification/saved_model/layers3/trial1/'
+mammal_call_path    = '../data_augmented/KillerWhale/KillerWhale_aug_0.wav'
+export_path         = 'mfccs_gui_test.json'
+saved_model_path    = '../saved_model/layers3/'
 
 def select_image_for_classification(mammal_label:int):
     image_map = {
-        1: '/Users/seantedesco/Documents/marine-mammal-call-classification/images/gui-images/bowhead-whale.jpeg',
-        2: '/Users/seantedesco/Documents/marine-mammal-call-classification/images/gui-images/humpback-whale.jpeg',
-        3: '/Users/seantedesco/Documents/marine-mammal-call-classification/images/gui-images/killer-whale.jpg',
-        4: '/Users/seantedesco/Documents/marine-mammal-call-classification/images/gui-images/walrus.jpg',
-        5: '/Users/seantedesco/Documents/marine-mammal-call-classification/images/gui-images/fin-back-whale.jpg',
-        6: '/Users/seantedesco/Documents/marine-mammal-call-classification/images/over-under-fitting-layers-3-5-7.png'
+        1: '../images/gui-images/bowhead-whale.jpeg',
+        2: '../images/gui-images/humpback-whale.jpeg',
+        3: '../images/gui-images/killer-whale.jpg',
+        4: '../images/gui-images/walrus.jpg',
+        5: '../images/gui-images/fin-back-whale.jpg',
+        6: '../images/over-under-fitting-layers-3-5-7.png'
     }
     return image_map[mammal_label]
 
@@ -113,11 +113,30 @@ def classify(raw_audio, audio_file, desired_size):
 
     return mammal_image, prediction_string
 
-with gr.Blocks() as demo:
+with gr.Blocks(theme = gr.themes.Soft()) as demo:
     gr.Markdown("# Marine Mammal Classification")
 
     with gr.Box():
         gr.Markdown("## Listen")
+        species_name = gr.Dropdown(
+            ["Walrus", "Killer Whale", "Finback Whale", "Bowhead Whale", "Humpback Whale", "Ambient Ocean Noise"], label="Species", info="Please select a species to classify:"
+        )
+        
+        # Convert to the species for filename.
+        if species_name == "Killer Whale":
+            species_name = "KillerWhale"
+        if species_name == "Bowhead Whale":
+            species_name = "BowheadWhale"
+        if species_name == "Humpback Whale":
+            species_name = "HumpbackWhale"
+        if species_name == "Finback Whale":
+            species_name = "Fin_FinbackWhale"
+        if species_name == "Ambient Ocean Noise":
+            species_name = "EmptyOcean"
+
+        file_number = gr.Textbox(info="Please enter a number between 0 and 99:")
+        # TODO for syd
+        # generated_path = "../data_augmented/" + species_name + "/" + species_name + "_aug_" + file_number + ".wav"
         file_path_input = gr.Textbox(mammal_call_path)
         audio = gr.Audio(mammal_call_path)
 
@@ -129,8 +148,8 @@ with gr.Blocks() as demo:
         gr.Markdown("## Classify")
         with gr.Row():
             classify_button = gr.Button("Classify")
-            class_label_output = gr.Textbox()
+            class_label_output = gr.Textbox(label="Result:", show_label=True)
         image_output = gr.Image()
         classify_button.click(classify, inputs=[audio, file_path_input, model_size_slider], outputs=[image_output, class_label_output])
 
-demo.launch()
+demo.launch(share=True) # share=True gives a public link.
