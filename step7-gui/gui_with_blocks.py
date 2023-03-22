@@ -9,7 +9,12 @@ from compression_lib import load_cnn_json
 import random
 
 export_path         = 'mfccs_gui_test.json'
-saved_model_path    = '../saved_model/layers3/'
+# saved_model_path    = '../saved_model/layers3/'
+
+MODEL_PATH_PREFIX = '../saved_model/gui_models/'
+# IMPORTANT: index of size and model name must match!
+MODEL_SIZE = ["0.15", "1.1", "2.1", "3.3"]
+FILE_NAMES = ["paramcount56237.h5", "paramcount56237.h5", "paramcount56237.h5", "paramcount56237.h5"]   # TODO: update this to be the correct names.
 
 def select_image_for_classification(mammal_label:int):
     image_map = {
@@ -33,16 +38,10 @@ def format_predictions(predictions):
             '''
 
 def select_model_given_constraint(desired_size):
-    size_to_model_index_map = {
-        # Model Size in MB : Model Index in List
-    }
-
-    model_list = []
-    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(saved_model_path)):
-        for f in filenames:
-            loaded_model = tf.keras.models.load_model(dirpath+f)
-            model_list.append(loaded_model)
-    return model_list[0]
+    index = MODEL_SIZE.index(desired_size)
+    file_name = MODEL_PATH_PREFIX + FILE_NAMES[index]
+    loaded_model = tf.keras.models.load_model(file_name)
+    return loaded_model
 
 def label_and_name_from_audio_file(audio_file):
     label_map = {
@@ -102,6 +101,15 @@ def classify(raw_audio, audio_file, desired_size):
     save_mfcc_single(audio_file, mammal_label, mammal_name)
     X, y, L = load_cnn_json(export_path)
 
+    if desired_size == 0.5:
+        desired_size = MODEL_SIZE[0]
+    elif desired_size == 1 or desired_size == 1.5:
+        desired_size = MODEL_SIZE[1]
+    elif desired_size == 2 or desired_size == 2.5:
+        desired_size = MODEL_SIZE[2]
+    else:
+        desired_size = MODEL_SIZE[3]
+
     # prepare and predict with a cnn model
     chosen_model = select_model_given_constraint(desired_size)
     predictions = chosen_model.predict(X)[0]
@@ -134,10 +142,10 @@ def get_name(input):
     return audio_file_path, audio_file_path
 
 
-with gr.Blocks(theme = gr.themes.Soft()) as demo:
+with gr.Blocks(theme = gr.themes.Soft(primary_hue="sky")) as demo:
     gr.Markdown("# Marine Mammal Classification")
 
-    with gr.Box():
+    with gr.Box(css=".gradio-container {background-color: sky}"):
         gr.Markdown("## Listen")
         species_name = gr.Dropdown(
             ["Walrus", "Killer Whale", "Finback Whale", "Bowhead Whale", "Humpback Whale", "Ambient Ocean Noise"], label="Species", info="Please select a species to classify:"
@@ -149,12 +157,14 @@ with gr.Blocks(theme = gr.themes.Soft()) as demo:
 
     with gr.Box():
         gr.Markdown('## Model Constraints')
-        model_size_slider = gr.Slider(0, 12, 6, step=0.25)
+        model_size_slider = gr.Slider(0.5, 3.5, 1, step=0.5, label="Slide to choose your size in MB.")
 
     with gr.Box():
-        gr.Markdown("## Classify")
+        gr.Markdown("## Classification")
         with gr.Row():
-            classify_button = gr.Button("Classify")
+            classify_button = gr.Button("Click here to classify!")
+            classify_button.style(size="lg")
+        with gr.Row():
             class_label_output = gr.Textbox(label="Result:", show_label=True)
         image_output = gr.Image()
         classify_button.click(classify, inputs=[audio, file_path_input, model_size_slider], outputs=[image_output, class_label_output])
