@@ -143,10 +143,13 @@ def get_name(input):
 
 
 with gr.Blocks(theme = gr.themes.Soft(primary_hue="sky")) as demo:
-    gr.Markdown("# Marine Mammal Classification")
+    gr.Markdown("<h1 style='text-align:center; font-size:48px;'>Marine Mammal Classification</h1>")
+    gr.Markdown("<h1 style='text-align:center; font-size:18px;'>A study on identifying marine mammals using machine learning</h1>")
+    
+
 
     with gr.Box(css=".gradio-container {background-color: sky}"):
-        gr.Markdown("## Listen")
+        gr.Markdown("<h1 style='text-align:center; font-size:28px;'>Listen</h1>")
         species_name = gr.Dropdown(
             ["Walrus", "Killer Whale", "Finback Whale", "Bowhead Whale", "Humpback Whale", "Ambient Ocean Noise"], label="Species", info="Please select a species to classify:"
         )
@@ -156,17 +159,22 @@ with gr.Blocks(theme = gr.themes.Soft(primary_hue="sky")) as demo:
         species_name.change(fn = get_name, inputs = species_name, outputs = [file_path_input, audio])
 
     with gr.Box():
-        gr.Markdown('## Model Constraints')
+        gr.Markdown("<h1 style='text-align:center; font-size:28px;'>Model Constraints</h1>")
         model_size_slider = gr.Slider(0.5, 3.5, 1, step=0.5, label="Slide to choose your size in MB.")
 
     with gr.Box():
-        gr.Markdown("## Classification")
+        gr.Markdown("<h1 style='text-align:center; font-size:28px;'>Classification</h1>")
         with gr.Row():
             classify_button = gr.Button("Click here to classify!")
+            classify_button.button_color = "#0072C6" # set button color to blue
             classify_button.style(size="lg")
         with gr.Row():
             class_label_output = gr.Textbox(label="Result:", show_label=True)
         image_output = gr.Image()
         classify_button.click(classify, inputs=[audio, file_path_input, model_size_slider], outputs=[image_output, class_label_output])
+    
+    # Add a footer with a Github icon and a link to a webpage
+    gr.HTML("<div style='text-align:center'><a href='https://github.com/SeanTedesco/marine-mammal-call-classification'><img src='https://github.com/favicon.ico' width='60' height='60'> View our Project on GitHub</a></div>")
+ 
 
 demo.launch(share=True) # share=True gives a public link.
