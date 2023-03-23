@@ -14,7 +14,7 @@ export_path         = 'mfccs_gui_test.json'
 MODEL_PATH_PREFIX = '../saved_model/gui_models/'
 # IMPORTANT: index of size and model name must match!
 MODEL_SIZE = ["0.15", "1.1", "2.1", "3.3"]
-FILE_NAMES = ["paramcount56237.h5", "paramcount56237.h5", "paramcount56237.h5", "paramcount56237.h5"]   # TODO: update this to be the correct names.
+FILE_NAMES = ["infineon_aurix.h5", "infineon_aurix.h5", "sifive.h5", "sifive.h5"]
 
 def select_image_for_classification(mammal_label:int):
     image_map = {
