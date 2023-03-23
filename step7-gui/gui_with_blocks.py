@@ -142,6 +142,15 @@ def get_name(input):
     return audio_file_path, audio_file_path
 
 
+def get_microcontroller_image(input):
+    if input == 0.5:
+        return "../images/gui-images/microcontrollers/arduino_mega.jpeg", "Arduino Mega"
+    elif input == 1 or input == 1.5 or input == 2:
+        return "../images/gui-images/microcontrollers/stm32.webp", "STM32"
+    elif input == 2.5 or input == 3 or input == 3.5:
+        return "../images/gui-images/microcontrollers/infineon.png", "Infineon"
+
+
 with gr.Blocks(theme = gr.themes.Soft(primary_hue="sky")) as demo:
     gr.Markdown("# Marine Mammal Classification")
 
@@ -158,6 +167,10 @@ with gr.Blocks(theme = gr.themes.Soft(primary_hue="sky")) as demo:
     with gr.Box():
         gr.Markdown('## Model Constraints')
         model_size_slider = gr.Slider(0.5, 3.5, 1, step=0.5, label="Slide to choose your size in MB.")
+        microcontroller_image = gr.Image()
+        microcontroller_name = gr.Textbox(label="Microcontroller brand name:")
+        microcontroller_image.style(height=200, width=200)
+        model_size_slider.change(fn = get_microcontroller_image, inputs = model_size_slider, outputs = [microcontroller_image, microcontroller_name])
 
     with gr.Box():
         gr.Markdown("## Classification")
