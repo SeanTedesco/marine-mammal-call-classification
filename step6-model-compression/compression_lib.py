@@ -23,7 +23,7 @@ def load_cnn_json(mfccs_json_path:str):
 
         # convert list into numpy arrays
         y = np.array(data['labels'])
-        X = np.array(data['mfcc'])
+        X = np.array(data['mfcc'])[:,0:130,:]
         L = np.array(data['mapping'])
 
     return (X, y, L)

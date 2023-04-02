@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
 acc_q = [
     0.923333333,
@@ -364,14 +366,43 @@ param_count = [
         - accuracy in percentage
         - parameter couunt in millions
 """
-size_b[:] = [x / 1000000 for x in size_b]
-size_p[:] = [x / 1000000 for x in size_p]
-size_q[:] = [x / 1000000 for x in size_q]
+size_b[:] = [round((x / 1000000), 1) for x in size_b]
+size_p[:] = [round((x / 1000000), 1) for x in size_p]
+size_q[:] = [round((x / 1000000), 1) for x in size_q]
 acc_b[:] = [x*100 for x in acc_b]
 acc_p[:] = [x*100 for x in acc_p]
 acc_q[:] = [x*100 for x in acc_q]
 param_count[:] = [x / 1000000 for x in param_count]
 param_count.sort()
+
+
+baseline_datapoints = list(zip(size_b, acc_b))
+baseline_datapoints.sort()
+
+pruned_datapoints = list(zip(size_p, acc_p))
+pruned_datapoints.sort()
+
+quantized_datapoints = list(zip(size_q, acc_q))
+quantized_datapoints.sort()
+
+all_datapoints = baseline_datapoints + pruned_datapoints + quantized_datapoints
+all_datapoints.sort()
+
+all_params = (x[0] for x in all_datapoints)
+all_acc = (x[1] for x in all_datapoints)
+datapoints = np.column_stack((all_params, all_acc))
+
+df = pd.DataFrame(all_datapoints, columns=['params', 'acc'])
+max_table = df.groupby('params').max()
+max_table_arr = np.column_stack((max_table.index, max_table.values))
+
+max_params = max_table_arr[:,0]
+max_acc = max_table_arr[:,1]
+
+plt.plot(max_params, max_acc, '-o', color='blue')
+plt.show()
+
+
 
 """
     - generate a figure with two x-axis
@@ -379,6 +410,7 @@ param_count.sort()
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax2 = ax1.twiny()
+plt.show()
 
 """
     - plot baseline, pruned, and quantized size and accuracy
@@ -388,8 +420,8 @@ measurements
 ax1.plot(size_b, acc_b, 'o', color='blue')
 ax1.plot(size_p, acc_p, 'o', color='red')
 ax1.plot(size_q, acc_q, 'o', color='green')
-ax1.set_ylabel("Model Accuracy (%)")
-ax1.set_xlabel("Model Size (MB)")
+ax1.set_ylabel("Model Accuracy (%)", fontsize=16)
+ax1.set_xlabel("Model Size (MB)", fontsize=16)
 ax1.legend(["Baseline", "Pruned", "Pruned & Quantized"])
 
 """
@@ -403,7 +435,7 @@ param34 = param_count[3*len(param_count)//4]
 
 ax2.set_xticks([min_param, param14, mid_param, param34, max_param])
 ax2.set_xticklabels([f"{min_param:.1f}", f"{param14:.1f}", f"{mid_param:.1f}", f"{param34:.1f}", f"{max_param:.1f}"])
-ax2.set_xlabel("Trainable Parameter Count (1e6)")
+ax2.set_xlabel("Number of Trainable Parameter Count (10e6)", fontsize=16)
 
 #plt.show()
 plt.savefig("layer3-family-compression-plot.png")
